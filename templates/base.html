@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="{{ 'dark' if is_dark else 'light' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Aggregator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-container">
+
+        <!-- Логотип -->
+        <a class="nav-brand" href="/">⚡ NEWS AGGREGATOR</a>
+
+        <!-- Поиск -->
+        <form class="nav-search" action="/" method="get">
+            {% if request.args.get('category') %}
+            <input type="hidden" name="category"
+                   value="{{ request.args.get('category') }}">
+            {% endif %}
+            <input type="text" name="q"
+                   placeholder="🔍 Поиск по новостям..."
+                   value="{{ search_query or '' }}">
+            <button type="submit">Найти</button>
+        </form>
+
+        <!-- Dark Mode -->
+        <button class="dark-toggle" onclick="toggleDark()">
+            {{ '☀️ Light' if is_dark else '🌙 Dark' }}
+        </button>
+
+    </div>
+</nav>
+
+<!-- КОНТЕНТ -->
+<main class="main-container">
+    {% block content %}{% endblock %}
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <p>
+        ⚡ News Aggregator |
+        Flask + SQLite + ML + APScheduler |
+        Автообновление каждый час
+    </p>
+</footer>
+
+<script>
+function toggleDark() {
+    fetch('/toggle-dark')
+        .then(r => r.json())
+        .then(d => location.reload());
+}
+</script>
+
+</body>
+</html>
