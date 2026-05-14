@@ -1,0 +1,11 @@
+news.db
+
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+ENV/
+
+.vscode/
+.idea/
+.DS_Store
