@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Хлебные крошки -->
+<nav class="breadcrumb">
+    <a href="/">← Главная</a>
+    <span>/</span>
+    <a href="/?category={{ article.category }}">
+        {{ article.category }}
+    </a>
+    <span>/</span>
+    <span>{{ article.title[:40] }}...</span>
+</nav>
+
+<!-- Статья -->
+<div class="article-container">
+
+    <header class="article-header">
+        <div class="article-meta">
+            <span class="category-badge cat-{{ article.category }}">
+                {% if article.category == 'sport' %}⚽
+                {% elif article.category == 'politics' %}🏛️
+                {% elif article.category == 'technology' %}💻
+                {% elif article.category == 'gaming' %}🎮
+                {% else %}📰{% endif %}
+                {{ article.category }}
+            </span>
+            <span class="source-badge">{{ article.source }}</span>
+            <span class="date-badge">{{ article.publish_date or '' }}</span>
+            <span class="views-count">👁 {{ article.views }} просмотров</span>
+        </div>
+
+        <h1 class="article-title">{{ article.title }}</h1>
+    </header>
+
+    <div class="article-body">
+        {{ article.description or 'Описание недоступно.' }}
+    </div>
+
+    <footer class="article-footer">
+        <a href="{{ article.url }}"
+           target="_blank"
+           class="btn-primary">
+            🔗 Читать оригинал на {{ article.source }}
+        </a>
+        <a href="/" class="btn-secondary">← К новостям</a>
+    </footer>
+
+</div>
+
+{% endblock %}

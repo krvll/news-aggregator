@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- ЗАГОЛОВОК -->
+<div class="page-header">
+    <h1>{{ '🌙 Ночной режим' if is_dark else '☀️ Лента новостей' }}</h1>
+    <p class="subtitle">
+        Всего статей: <strong>{{ total }}</strong> |
+        {% if current_category %}
+            Категория: <strong>{{ current_category }}</strong> |
+        {% endif %}
+        {% if search_query %}
+            Поиск: <strong>"{{ search_query }}"</strong> |
+        {% endif %}
+        Найдено: <strong>{{ news|length }}</strong>
+    </p>
+</div>
+
+<div class="content-grid">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <!-- Категории -->
+        <div class="sidebar-block">
+            <h3>📂 Категории</h3>
+            <ul class="category-list">
+                <li>
+                    <a href="/"
+                       class="{{ 'active' if not current_category else '' }}">
+                        🌐 Все
+                        <span class="badge">{{ total }}</span>
+                    </a>
+                </li>
+                {% for cat, count in cat_stats.items() %}
+                {% if count > 0 %}
+                <li>
+                    <a href="/?category={{ cat }}"
+                       class="{{ 'active' if current_category == cat else '' }}">
+                        {% if cat == 'sport' %}⚽
+                        {% elif cat == 'politics' %}🏛️
+                        {% elif cat == 'technology' %}💻
+                        {% elif cat == 'gaming' %}🎮
+                        {% else %}📰{% endif %}
+                        {{ cat }}
+                        <span class="badge">{{ count }}</span>
+                    </a>
+                </li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Тренды -->
+        <div class="sidebar-block">
+            <h3>📈 Тренды</h3>
+            {% for trend in trends %}
+            <a href="/article/{{ trend.id }}" class="trend-item">
+                <span class="trend-title">{{ trend.title[:50] }}...</span>
+                <span class="trend-views">👁 {{ trend.views }}</span>
+            </a>
+            {% endfor %}
+        </div>
+
+        <!-- API ссылки -->
+        <div class="sidebar-block">
+            <h3>🔌 REST API</h3>
+            <ul class="api-links">
+                <li><a href="/api/news" target="_blank">/api/news</a></li>
+                <li>
+                    <a href="/api/news?category=sport"
+                       target="_blank">/api/news?category=sport</a>
+                </li>
+                <li>
+                    <a href="/api/trending"
+                       target="_blank">/api/trending</a>
+                </li>
+            </ul>
+        </div>
+
+    </aside>
+
+    <!-- ЛЕНТА НОВОСТЕЙ -->
+    <section class="news-feed">
+
+        <!-- Активный фильтр -->
+        {% if current_category or search_query %}
+        <div class="filter-banner">
+            <span>
+                Фильтр активен:
+                {% if current_category %}
+                    категория <strong>{{ current_category }}</strong>
+                {% endif %}
+                {% if search_query %}
+                    поиск <strong>"{{ search_query }}"</strong>
+                {% endif %}
+            </span>
+            <a href="/" class="clear-filter">✕ Сбросить</a>
+        </div>
+        {% endif %}
+
+        <!-- Карточки новостей -->
+        {% for article in news %}
+        <article class="news-card" onclick="location='/article/{{ article.id }}'">
+
+            <div class="card-header">
+                <span class="category-badge cat-{{ article.category }}">
+                    {% if article.category == 'sport' %}⚽
+                    {% elif article.category == 'politics' %}🏛️
+                    {% elif article.category == 'technology' %}💻
+                    {% elif article.category == 'gaming' %}🎮
+                    {% else %}📰{% endif %}
+                    {{ article.category }}
+                </span>
+                <span class="source-badge">{{ article.source }}</span>
+                <span class="date-badge">{{ article.publish_date or '' }}</span>
+            </div>
+
+            <h2 class="card-title">{{ article.title }}</h2>
+
+            <p class="card-desc">
+                {{ (article.description or '')[:200] }}
+                {% if article.description and article.description|length > 200 %}...{% endif %}
+            </p>
+
+            <div class="card-footer">
+                <span class="views-count">
+                    {% if article.views > 50 %}🔥{% else %}👁{% endif %}
+                    {{ article.views }} просмотров
+                </span>
+                <a href="/article/{{ article.id }}"
+                   class="read-more">Читать →</a>
+            </div>
+
+        </article>
+        {% endfor %}
+
+        <!-- Пустое состояние -->
+        {% if not news %}
+        <div class="empty-state">
+            <h3>😔 Новостей не найдено</h3>
+            <p>Попробуйте изменить фильтр или поисковый запрос</p>
+            <a href="/" class="btn-primary">← На главную</a>
+        </div>
+        {% endif %}
+
+    </section>
+
+</div>
+
+{% endblock %}
